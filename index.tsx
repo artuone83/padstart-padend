@@ -2,11 +2,18 @@ import React, { useState } from 'react';
 import { render } from 'react-dom';
 import './style.css';
 
-const maskStart = (
-  stringToMask: string | number,
-  charToMask: number
-): string => {
-  const baseString = stringToMask.toString();
+enum InputName {
+  STRING = 'string',
+  CHARACTERS = 'characters',
+}
+
+enum RadioInputValue {
+  START = 'start',
+  END = 'end',
+}
+
+const maskStart = (stringToMask: string, charToMask: number): string => {
+  const baseString = stringToMask;
   const stringWthoutCharToMask = baseString.slice(
     charToMask,
     baseString.length
@@ -16,8 +23,8 @@ const maskStart = (
   return masked;
 };
 
-const maskEnd = (stringToMask: string | number, charToMask: number): string => {
-  const baseString = stringToMask.toString();
+const maskEnd = (stringToMask: string, charToMask: number): string => {
+  const baseString = stringToMask;
   const stringWthoutCharToMask = baseString.slice(
     0,
     baseString.length - charToMask
@@ -31,23 +38,25 @@ const App = () => {
   const [inputStringValue, setInputStringValue] = useState<string>('');
   const [inputCharactersValue, setInputCharactersValue] = useState<string>('');
   const [maskedValue, setMaskedValue] = useState<string>('');
-  const [maskDirection, setMaskDirection] = useState<string>('start');
+  const [maskDirection, setMaskDirection] = useState<string>(
+    RadioInputValue.START
+  );
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-    if (maskDirection === 'start')
+    if (maskDirection === RadioInputValue.START)
       setMaskedValue(maskStart(inputStringValue, +inputCharactersValue));
-    if (maskDirection === 'end')
+    if (maskDirection === RadioInputValue.END)
       setMaskedValue(maskEnd(inputStringValue, +inputCharactersValue));
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
 
-    if (name === 'string') setInputStringValue(value);
-    if (name === 'characters') setInputCharactersValue(value);
-    if (value === 'start') setMaskDirection(value);
-    if (value === 'end') setMaskDirection(value);
+    if (name === InputName.STRING) setInputStringValue(value);
+    if (name === InputName.CHARACTERS) setInputCharactersValue(value);
+    if (value === RadioInputValue.START) setMaskDirection(value);
+    if (value === RadioInputValue.END) setMaskDirection(value);
   };
 
   return (
@@ -57,13 +66,13 @@ const App = () => {
         <form onSubmit={handleSubmit}>
           <label>
             String or number to mask
-            <input onChange={handleChange} name='string' />
+            <input onChange={handleChange} name={InputName.STRING} />
           </label>
           <label>
-            Characters or numbers to mask
+            Amount of characters to mask
             <input
               onChange={handleChange}
-              name='characters'
+              name={InputName.CHARACTERS}
               type='number'
               min={0}
             />
@@ -74,9 +83,9 @@ const App = () => {
               Start
               <input
                 type='radio'
-                value='start'
+                value={RadioInputValue.START}
                 name='mask-direction'
-                checked={maskDirection === 'start'}
+                checked={maskDirection === RadioInputValue.START}
                 onChange={handleChange}
               />
             </label>
@@ -84,9 +93,9 @@ const App = () => {
               End
               <input
                 type='radio'
-                value='end'
+                value={RadioInputValue.END}
                 name='mask-direction'
-                checked={maskDirection === 'end'}
+                checked={maskDirection === RadioInputValue.END}
                 onChange={handleChange}
               />
             </label>
