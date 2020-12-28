@@ -101,7 +101,7 @@ const App = () => {
             </label>
           </div>
           <button
-            disabled={!(inputStringValue && inputCharactersValue !== '')}
+            disabled={!(inputStringValue && inputCharactersValue)}
             type='submit'
           >
             Mask
